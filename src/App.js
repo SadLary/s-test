@@ -3,13 +3,12 @@ import './App.css';
 import Search from './components/Search'
 import Preloader from './components/Preloader'
 import List from './components/List'
-import Flipping from './components/Flipping'
 
 function App() {
   const [users, setUsers] = useState([])
   const [filtred, setFiltred] = useState(users)
-  const [pageCounter, setPageCounter] = useState(1)
   const [isFetching, setIsFetching] = useState(true)
+
 
   const searchFirstName = (event) => {
     const firstNameValue = event.target.value
@@ -36,33 +35,31 @@ function App() {
       setFiltred(filtredUsers)
     }
   }
-  function increment() {
-    setPageCounter(pageCounter + 1)
-  }
-  function decrement() {
-    setPageCounter(pageCounter - 1)
-  }
-  async function requestUsers(counter) {
+  let pageCounter = 1
+  let full = []
+  // Вообще изначально моя идея заключалась в том чтобы конкатенировать
+  // предыдущее состояние и результат запроса, но тогда рендер выдавал ошибку о уникальном key
+  // Данной решение скорее всего очень не лаконично и это плохой пример кода, но как сделать лучше я не знаю.
+  async function requestUsers() {
     setIsFetching(true)
-    await fetch(`https://us-central1-smooth-topic-238416.cloudfunctions.net/test-fn?page=${counter}`)
-      .then(response => response.json())
-      .then(json => {
-        setUsers(json)
-        setFiltred(json)
-        setIsFetching(false)
-        console.log(counter);
-      })
+    const res = await (await fetch(`https://us-central1-smooth-topic-238416.cloudfunctions.net/test-fn?page=${pageCounter}`)).json()
+    full.push(res)
+    if(res.length > 0) {
+      pageCounter++
+      return requestUsers()
+    }
+    setUsers(full.flat(1)) 
+    setIsFetching(false)
   }
   useEffect(() => {
-    requestUsers(pageCounter)
+    requestUsers()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageCounter])
+  },[])
   return (
     <div className="App">
       <Search searchLastName={searchLastName} searchFirstName={searchFirstName} />
       {isFetching ? <Preloader /> : ''}
       <List users={users} filtred={filtred} />
-      <Flipping increment={increment} decrement={decrement} pageCounter={pageCounter} />
     </div>
   );
 }
