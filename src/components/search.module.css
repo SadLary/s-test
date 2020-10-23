@@ -1,0 +1,11 @@
+.input {
+    padding: 5px 10px;
+    font-size: 16px;
+    margin: 20px;
+}
+.input::placeholder {
+    transition: 0.3s;
+}
+.input:focus::placeholder {
+    opacity: 0;
+}
