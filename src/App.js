@@ -12,27 +12,47 @@ function App() {
 
   const searchFirstName = (event) => {
     const firstNameValue = event.target.value
-
-    const filtredUsers = users.filter(user => {
-      return user.first_name.toLowerCase().includes(firstNameValue);
-    });
-    if (filtredUsers === []) {
-      setFiltred(users)
+    if (filtred.length > 0) {
+      const filtredUsers = filtred.filter(user => {
+        return user.first_name.toLowerCase().includes(firstNameValue)
+      })
+      if (firstNameValue === '') {
+        setFiltred(users)
+      } else {
+        setFiltred(filtredUsers)
+      }
     } else {
-      setFiltred(filtredUsers)
+      console.log(filtred);
+      const filtredUsers = users.filter(user => {
+        return user.first_name.toLowerCase().includes(firstNameValue);
+      });
+      if (firstNameValue === '') {
+        setFiltred(users)
+      } else {
+        setFiltred(filtredUsers)
+      }
     }
   }
   const searchLastName = (event) => {
-
-    const firstNameValue = event.target.value
-
-    const filtredUsers = users.filter(user => {
-      return user.last_name.toLowerCase().includes(firstNameValue);
-    });
-    if (filtredUsers === []) {
-      setFiltred(users)
+    const lastNameValue = event.target.value
+    if (filtred.length > 0) {
+      const filtredUsers = filtred.filter(user => {
+        return user.last_name.toLowerCase().includes(lastNameValue)
+      })
+      if (lastNameValue === '') {
+        setFiltred(users)
+      } else {
+        setFiltred(filtredUsers)
+      }
     } else {
-      setFiltred(filtredUsers)
+      const filtredUsers = users.filter(user => {
+        return user.last_name.toLowerCase().includes(lastNameValue);
+      });
+      if (lastNameValue === '') {
+        setFiltred(users)
+      } else {
+        setFiltred(filtredUsers)
+      }
     }
   }
   let pageCounter = 1
@@ -44,17 +64,18 @@ function App() {
     setIsFetching(true)
     const res = await (await fetch(`https://us-central1-smooth-topic-238416.cloudfunctions.net/test-fn?page=${pageCounter}`)).json()
     full.push(res)
-    if(res.length > 0) {
+    // Единственное единственное условие, которое я смог придумать.
+    if (res.length === full.flat(1).length / pageCounter) {
       pageCounter++
       return requestUsers()
     }
-    setUsers(full.flat(1)) 
+    setUsers(full.flat(1))
     setIsFetching(false)
   }
   useEffect(() => {
     requestUsers()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  }, [])
   return (
     <div className="App">
       <Search searchLastName={searchLastName} searchFirstName={searchFirstName} />

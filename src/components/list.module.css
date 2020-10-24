@@ -1,13 +1,22 @@
 .list {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: 20px;
-    /* justify-content: space-between; */
+    width: 70%;
 }
 .item {
-    padding: 20px;
     border: 1px solid #000000;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    width: 300px;
+    display: flex;
+}
+.heading_row {
+    display: flex;
+    border: 1px solid;
+}
+.cell {
+    width: 30%;
+    padding: 10px;
+    border-right: 1px solid;
+}
+.cell:last-child {
+    border-right: none;
 }
